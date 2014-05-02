@@ -20,7 +20,7 @@ GameManager.prototype.restart = function () {
   this.setup();
 };
 
-// Keep playing after winning (allows going over 2048)
+// Keep playing after winning (allows going over 2584)
 GameManager.prototype.keepPlaying = function () {
   this.keepPlaying = true;
   this.actuator.continueGame(); // Clear the game won/lost message
@@ -68,8 +68,9 @@ GameManager.prototype.addStartTiles = function () {
 // Adds a tile in a random position
 GameManager.prototype.addRandomTile = function () {
   if (this.grid.cellsAvailable()) {
-    var value = Math.random() < 0.9 ? 2 : 4;
-    var tile = new Tile(this.grid.randomAvailableCell(), value);
+    var number = 1
+	var value = 1
+    var tile = new Tile(this.grid.randomAvailableCell(), number, value);
 
     this.grid.insertTile(tile);
   }
@@ -153,8 +154,8 @@ GameManager.prototype.move = function (direction) {
         var next      = self.grid.cellContent(positions.next);
 
         // Only one merger per row traversal?
-        if (next && next.value === tile.value && !next.mergedFrom) {
-          var merged = new Tile(positions.next, tile.value * 2);
+        if (next && ((tile.number == 1 && next.number == 1) || (Math.abs(next.number - tile.number) === 1)) && !next.mergedFrom) {
+          var merged = new Tile(positions.next, Math.max(tile.number, next.number) + 1, tile.value + next.value);
           merged.mergedFrom = [tile, next];
 
           self.grid.insertTile(merged);
@@ -166,8 +167,8 @@ GameManager.prototype.move = function (direction) {
           // Update the score
           self.score += merged.value;
 
-          // The mighty 2048 tile
-          if (merged.value === 2048) self.won = true;
+          // The mighty 2584 tile
+          if (merged.value === 2584) self.won = true;
         } else {
           self.moveTile(tile, positions.farthest);
         }
@@ -256,7 +257,7 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
           var other  = self.grid.cellContent(cell);
 
-          if (other && other.value === tile.value) {
+          if (other && ((tile.number == 1 && other.number == 1) || (Math.abs(other.number - tile.number) === 1))) {
             return true; // These two tiles can be merged
           }
         }

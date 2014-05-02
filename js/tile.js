@@ -1,7 +1,8 @@
-function Tile(position, value) {
+function Tile(position, number, value) {
   this.x                = position.x;
   this.y                = position.y;
-  this.value            = value || 2;
+  this.number           = number || 1;
+  this.value            = value || 1;
 
   this.previousPosition = null;
   this.mergedFrom       = null; // Tracks tiles that merged together
@@ -22,6 +23,7 @@ Tile.prototype.serialize = function () {
       x: this.x,
       y: this.y
     },
+	number: this.number,
     value: this.value
   };
 };
